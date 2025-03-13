@@ -151,6 +151,23 @@ export interface PageFilters {
 }
 
 /**
+ * Layouts
+ */
+export interface LayoutItem {
+  label: string
+  description: string
+  uid: string
+  type: 'text' | 'html' | 'boolean' | 'svg'
+  value: string | boolean
+}
+
+export interface Layout {
+  id: string
+  name: string
+  items: LayoutItem[]
+}
+
+/**
  * Creates a JustCMS client instance.
  *
  * The client uses the provided API token and project ID, or falls back to the
@@ -325,11 +342,35 @@ export function createJustCMSClient(apiToken?: string, projectIdParam?: string) 
     return page.categories.map((category) => category.slug).includes(categorySlug);
   };
 
+  /**
+   * Retrieves a single layout by its ID.
+   *
+   * @param id The layout ID.
+   *
+   * @returns A promise that resolves with the layout details.
+   */
+  const getLayoutById = async (id: string): Promise<Layout> => {
+    return get<Layout>(`layouts/${id}`);
+  };
+
+  /**
+   * Retrieves multiple layouts by their IDs.
+   *
+   * @param ids Array of layout IDs.
+   *
+   * @returns A promise that resolves with an array of layout details.
+   */
+  const getLayoutsByIds = async (ids: string[]): Promise<Layout[]> => {
+    return get<Layout[]>(`layouts/${ids.join(';')}`);
+  };
+
   return {
     getCategories,
     getPages,
     getPageBySlug,
     getMenuById,
+    getLayoutById,
+    getLayoutsByIds,
     isBlockHasStyle,
     getLargeImageVariant,
     getFirstImage,
